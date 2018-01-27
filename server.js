@@ -1,23 +1,28 @@
-var http = require('http');
-var fs = require('fs');
+const fs = require('fs');
+const express = require('express');
+const app = express();
 
-const express = require('express')
-const app = express()
+let index;
+fs.readFile('index.html', (err, data) => {    
+    index = data;
+});
 
-app.get('/', (request, response) => {
-    throw new Error('oops')
-})
+app.use(express.static('./', {
+    dotfiles: 'ignore',
+    etag: false,
+    extensions: ['htm', 'html'],
+    maxAge: '1d',
+    redirect: false,
+    setHeaders: (rs, path, stat) => {
+        rs.set('x-timestamp', Date.now());
+    }
+}));
 
-app.use((err, request, response, next) => {
-    // log the error, for now just console.log
-    console.log(err)
-    response.status(500).send('Something broke!')
-})
+app.get('/', (rq, rs) => {
+    rs.set('Content-Type', 'text/html');
+    rs.send(index);
+    rs.end();
+    throw new Error('oops');
+});
 
-// http.createServer(function (req, res) {
-//     fs.readFile('dist/index.html', function (err, data) {
-//         res.writeHead(200, { 'Content-Type': 'text/html' });
-//         res.write(data);
-//         res.end();
-//     });
-// }).listen(8080);
+app.listen(3000, () => console.log('Listening on port 3000...'));

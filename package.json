@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack && gulp",
     "serve": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,8 +16,11 @@
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "css-loader": "^0.28.9",
+    "express": "^4.16.2",
+    "gulp": "^3.9.1",
     "style-loader": "^0.19.1",
-    "webpack": "^3.10.0"
+    "webpack": "^3.10.0",
+    "yargs": "^11.0.0"
   },
   "dependencies": {
     "lodash": "^4.17.4"
