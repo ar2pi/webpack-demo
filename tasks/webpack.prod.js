@@ -16,21 +16,21 @@ let aliasMap = getDirectories('./src/Aviatur').reduce(function (acc, cur, i) {
 }, {});
 
 let entries = [
-    'FlightBundle//flight-availability.js',
-    'HotelBundle//hotel-availability.js',
-    'GeneralBundle//general-detail.js',
-], entryMap = {};
+        'FlightBundle//flight-availability.js',
+        'HotelBundle//hotel-availability.js',
+        'GeneralBundle//general-detail.js',
+    ],
+    entryMap = {};
 for (let entry of entries) {
     const partials = entry.split('//');
     entryMap[partials[1].replace(/\..*$/, '')] = './' + partials.join('/Resources/public/js/')
 }
+entryMap['common'] = [
+    '../../web/assets/common_assets/js/common.js'
+];
 
 module.exports = {
     entry: entryMap,
-    output: {
-        filename: './dist/[name].[chunkhash:16].js', // @todo: caching see https://webpack.js.org/guides/caching/
-        path: path.resolve(__dirname, '../web/js')
-    },
     context: path.resolve(__dirname, '../src/Aviatur'),
     resolve: {
         extensions: ['*', '.js', '.json'],
@@ -44,15 +44,24 @@ module.exports = {
         }]
     },
     plugins: [
+        new CleanWebpackPlugin(['dist'], {
+            root: path.resolve(__dirname, '../web/js')
+        }),
+        new webpack.HashedModuleIdsPlugin(),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: ['boilerplate', 'common'],
+            minChunks: 2
+        }),
         new ManifestPlugin({
             basePath: 'js/',
             map: obj => {
                 obj.path = obj.path.replace('./', '');
                 return obj;
             }
-        }),
-        new CleanWebpackPlugin(['dist'], { 
-            root: path.resolve(__dirname, '../web/js')
         })
-    ]
+    ],
+    output: {
+        filename: './dist/[name].[chunkhash:16].js', // @todo: caching see https://webpack.js.org/guides/caching/
+        path: path.resolve(__dirname, '../web/js')
+    }
 };
