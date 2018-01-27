@@ -3,11 +3,11 @@ const express = require('express');
 const app = express();
 
 let index;
-fs.readFile('index.html', (err, data) => {    
+fs.readFile('../index.html', (err, data) => {
     index = data;
 });
 
-app.use(express.static('./', {
+app.use(express.static('../web', {
     dotfiles: 'ignore',
     etag: false,
     extensions: ['htm', 'html'],
