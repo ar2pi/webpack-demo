@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack --config tasks/webpack.dev.js",
+    "dev": "NODE_ENV=development webpack --config tasks/webpack.dev.js",
     "build": "NODE_ENV=production webpack --config tasks/webpack.prod.js",
     "start:dev": "webpack-dev-server"
   },
@@ -18,15 +18,21 @@
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "browser-sync": "^2.23.6",
+    "chalk": "^2.3.0",
     "clean-webpack-plugin": "^0.1.18",
     "css-loader": "^0.28.9",
     "express": "^4.16.2",
     "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-concat": "^2.6.1",
     "gulp-postcss": "^7.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.4",
+    "mdcss": "^1.5.2",
+    "moment": "^2.20.1",
     "node-sass": "^4.7.2",
+    "postcss-cachebuster": "^0.1.5",
     "postcss-csso": "^3.0.0",
+    "postcss-discard-comments": "^2.0.4",
     "postcss-node-sass": "^2.1.4",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.19.1",
@@ -39,5 +45,20 @@
   },
   "dependencies": {
     "lodash": "^4.17.4"
-  }
+  },
+  "browserslist": [
+    ">= 0.25% in my stats",
+    ">= 0.5% in CO",
+    ">= 1% in alt-SA",
+    ">= 1% in US",
+    ">= 1% in FR",
+    ">= 2%",
+    "last 2 major versions",
+    "last 2 years",
+    "last 3 chromeandroid major versions",
+    "last 3 ios major versions",
+    "last 4 safari major versions",
+    "ie >= 9",
+    "not ie < 9"
+  ]
 }
