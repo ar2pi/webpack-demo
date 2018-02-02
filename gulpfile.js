@@ -2,7 +2,6 @@ const gulp          = require('gulp');
 const fs            = require('fs');
 const path          = require('path');
 const argv          = require('yargs').argv;
-const moment        = require('moment');
 const chalk         = require('chalk');
 const chokidar      = require('chokidar');
 
@@ -18,14 +17,9 @@ const cachebuster   = require('postcss-cachebuster');
 const sass          = require('postcss-node-sass');
 const csso          = require('postcss-csso');
 
-const isDirectory = source => fs.lstatSync(source).isDirectory();
-const isFile = source => fs.lstatSync(source).isFile();
-const getDirectories = source =>
-    fs.readdirSync(source).map(name => path.join(source, name)).filter(isDirectory);
-const getFiles = source => 
-    fs.readdirSync(source).map(name => path.join(source, name)).filter(isFile);
+const _util         = require('./scripts/_util.js');
 
-let aliasMap = getDirectories(path.join('.', 'web', 'assets')).reduce((acc, cur, i) => {
+let aliasMap = _util.getDirectories(path.join('.', 'web', 'assets')).reduce((acc, cur, i) => {
     let folder = cur.match(/[\/\\](\w*)_assets$/);
     if (folder !== null) {
         acc[folder[1]] =  path.join('web', 'assets', `${folder[1]}_assets`, 'css');
@@ -56,7 +50,7 @@ const sassChain = src => {
 };
 
 const postSassChain = src => {
-    const cssFiles = getFiles(src).filter(file => /\.css$/.test(file));
+    const cssFiles = _util.getFiles(src).filter(file => /\.css$/.test(file));
     let mainCss = cssFiles.filter(file => /^main$/.test(path.basename(file, '.css')));
     let customCss = cssFiles.filter(file => !/^(?:main)|(?:main.min)$/.test(path.basename(file, '.css')));
     let dest = path.resolve(src);
@@ -80,7 +74,7 @@ const postSassChain = src => {
 };
 
 const docChain = src => {
-    let mainCss = getFiles(src).filter(file => /main.css$/.test(file));
+    let mainCss = _util.getFiles(src).filter(file => /main.css$/.test(file));
     let dest = path.resolve(src);
     let plugins = [
         mdcss({
@@ -100,25 +94,25 @@ const taskRunner = (tasks, done) => {
     for (folder of assets_folder_paths) {
         let assetsFolder = /[\/\\].*_assets[\/\\]/.test(folder) ? folder.replace(/.*[\/\\](.*_assets)[\/\\].*/, '$1') : folder;
         let tasksGroup = tasks.map(t => chalk.bold.rgb(0,128,128)(t));
-        console.log(`[${chalk.gray(moment().format('HH[:]mm[:]ss'))}] Starting [${tasksGroup.join(', ')}'] in ${assetsFolder}`);
+        _util.log(`Starting [${tasksGroup.join(', ')}'] in ${assetsFolder}`);
         for (let i = 0; i < tasks.length; i++) {
             switch(tasks[i]) {
                 case 'sass':
-                    console.log(`[${chalk.gray(moment().format('HH[:]mm[:]ss'))}] - Writing ${chalk.bold('main.css')}`);
+                    _util.log(`- Writing ${chalk.bold('main.css')}`);
                     sassChain(path.join(folder, 'scss', 'main.scss'));
                     break;
                 case 'postSass':
-                    console.log(`[${chalk.gray(moment().format('HH[:]mm[:]ss'))}] - Writing ${chalk.bold('main.min.css')}`);
+                    _util.log(`- Writing ${chalk.bold('main.min.css')}`);
                     postSassChain(folder);
                     break;
                 case 'doc':
-                    console.log(`[${chalk.gray(moment().format('HH[:]mm[:]ss'))}] - Generating doc in ./styleguide`);
+                    _util.log(`- Generating doc in ./styleguide`);
                     docChain(folder);
                     break;
             }
-            console.log(`[${chalk.gray(moment().format('HH[:]mm[:]ss'))}] - Done with '${tasksGroup[i]}'`);
+            _util.log(`- Done with '${tasksGroup[i]}'`);
         }
-        console.log(`[${chalk.gray(moment().format('HH[:]mm[:]ss'))}] Finished [${tasksGroup.join(', ')}] in ${assetsFolder}`);
+        _util.log(`Finished [${tasksGroup.join(', ')}] in ${assetsFolder}`);
     }
     return done();
 };
@@ -138,11 +132,11 @@ gulp.task('watch', () => {
                 if (ignore.test(fpath))
                     return;
             }
-            console.log(`[${chalk.gray(moment().format('HH[:]mm[:]ss'))}] ${chalk.bold(fpath)} changed`);
+            _util.log(`${chalk.bold(fpath)} changed`);
             gulp.parallel('css')();
         }
     }).on('error', error => {
-        console.log(`Watcher error: ${error}`);
+        _util.log(`Watcher error: ${error}`);
     });
 });
 
